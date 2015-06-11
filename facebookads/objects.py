@@ -1695,15 +1695,16 @@ class CustomAudience(AbstractCrudObject):
         return 'customaudiences'
 
     @classmethod
-    def format_params(cls, schema, users, app_ids=None):
+    def format_params(cls, schema, users, hashIds, app_ids=None):
         hashed_users = []
-        if schema in (cls.Schema.phone_hash, cls.Schema.email_hash):
-            for user in users:
-                if schema == cls.Schema.email_hash:
-                    user = user.strip(" \t\r\n\0\x0B.").lower()
-                if isinstance(user, six.text_type):
-                    user = user.encode('utf8')  # required for hashlib
-                hashed_users.append(hashlib.sha256(user).hexdigest())
+        if hashIds:
+            if schema in (cls.Schema.phone_hash, cls.Schema.email_hash):
+                for user in users:
+                    if schema == cls.Schema.email_hash:
+                        user = user.strip(" \t\r\n\0\x0B.").lower()
+                    if isinstance(user, six.text_type):
+                        user = user.encode('utf8')  # required for hashlib
+                    hashed_users.append(hashlib.sha256(user).hexdigest())
 
         payload = {
             'schema': schema,
